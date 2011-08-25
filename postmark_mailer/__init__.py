@@ -46,6 +46,8 @@ def make_message(subject, message, from_email, to_list, message_html=None, cc_li
     
     if attachements:
         message_data['Attachments'] = attachements
+        
+    return Message.objects.create(message_data=message_data, priority=priority)
     
 
 # replacement for django.core.mail.send_mail
