@@ -31,14 +31,10 @@ def send_batch(retry_deferred=True, test=False):
     
     batch_data = '[%s]' % ','.join([message.message_data for message in messages])
     
-    if test:
-        requests.settings.verbose = sys.stderr
     postmark_request = requests.post(POSTMARK_API_BATCH_URL, batch_data, headers={'X-Postmark-Server-Token': api_key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
     
     if postmark_request.status_code == 200:
         batch_logs = json.loads(postmark_request.content)
-        print postmark_request.content
-        print batch_logs
         
         message_logs = zip(messages, batch_logs)
         
