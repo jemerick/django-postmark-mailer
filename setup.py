@@ -1,11 +1,11 @@
 from distutils.core import setup
-
+import setuptools
 
 setup(
     name="django-postmark-mailer",
     version=__import__("postmark_mailer").__version__,
     description="A reusable Django app for queuing the sending of email via postmarkapp.com batch messaging API",
-    long_description=open("docs/usage.txt").read(),
+    long_description=open("README.md").read(),
     author="Jason Emerick",
     author_email="jemerick@gmail.com",
     url="",
