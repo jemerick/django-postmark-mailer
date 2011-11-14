@@ -1,6 +1,6 @@
-from postmark_mailer.models import Message, MessageLog, make_message
+from postmark_mailer.models import Message, MessageLog
 from postmark_mailer.engine import send_batch
-from postmark_mailer import send_mail, send_html_mail
+from postmark_mailer import send_mail, send_html_mail, EmailMessage
 
 
 from django.test import TestCase
@@ -17,9 +17,11 @@ except ImportError:
 class MakeMessageTest(TestCase):
     
     def test_make_message(self):
-        message = make_message('subject', 'text message', 'jason@mobelux.com', ['jemerick@gmail.com'], message_html='html message', cc_list=['garrett@mobelux.com', 'jeff@mobelux.com'], bcc_list=None, priority=1, reply_to='carousel@mobelux.com', headers={'X-Mailer': 'django-postmark-mailer'}, tag="tag")
+        email_message = EmailMessage('subject', 'text message', 'jason@mobelux.com', ['jemerick@gmail.com'], html_body='html message', cc=['garrett@mobelux.com', 'jeff@mobelux.com'], bcc=None, reply_to='carousel@mobelux.com', headers={'X-Mailer': 'django-postmark-mailer'}, tag="tag")
         
-        self.assertEqual(message.priority, 1)
+        message = email_message.send()
+        
+        self.assertEqual(message.priority, 2)
         
         email = json.loads(message.message_data)
         
@@ -76,7 +78,7 @@ class MakeMessageTest(TestCase):
         self.assertEqual(email.get('Tag'), None)
         self.assertEqual(email.get('Headers'), None)
 
-class SendBatchTest(TestCase):
+class SendBatchTestTwo(TestCase):
     
     MESSAGE_1 = """{
         "From": "Talk <asdf@asdf.com>",
@@ -109,6 +111,34 @@ class SendBatchTest(TestCase):
         
         self.assertEqual(Message.objects.all().count(), 0)
         self.assertEqual(MessageLog.objects.all().count(), 2)
+        
+        message_logs = MessageLog.objects.all()
+        
+        for message_log in message_logs:
+            self.assertEqual(message_log.error_code, 0)
+            
+class SendBatchTestOne(TestCase):
+    
+    MESSAGE_1 = """{
+        "From": "Talk <asdf@asdf.com>",
+        "To": "jemerick@gmail.com,jason@mobelux.com",
+        "Subject": "Test",
+        "Tag": "test",
+        "HtmlBody": "<b>Hello</b>",
+        "TextBody": "Hello",
+        "ReplyTo": "carousel@mobelux.com"
+    }"""
+    
+    def setUp(self):
+        
+        Message.objects.create(message_data=self.MESSAGE_1)
+        
+    def test_send_batch_of_two(self):
+        
+        send_batch(test=True)
+        
+        self.assertEqual(Message.objects.all().count(), 0)
+        self.assertEqual(MessageLog.objects.all().count(), 1)
         
         message_logs = MessageLog.objects.all()
         

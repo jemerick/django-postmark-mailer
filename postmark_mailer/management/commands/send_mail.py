@@ -9,5 +9,5 @@ class Command(BaseCommand):
     )
     
     def handle(self, *args, **options):        
-        send_batch(self.deferred)
+        send_batch()
             
