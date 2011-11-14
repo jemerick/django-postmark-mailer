@@ -11,6 +11,7 @@ setup(
     url="",
     packages=[
         "postmark_mailer",
+        "postmark_mailer.migrations",
         "postmark_mailer.management",
         "postmark_mailer.management.commands",
     ],
