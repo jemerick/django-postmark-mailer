@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from optparse import make_option
 from postmark_mailer.engine import send_batch
 
@@ -10,4 +10,3 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):        
         send_batch()
-            

@@ -1,6 +1,5 @@
 from django.conf import settings
 from postmark_mailer.models import Message, MessageLog
-import sys
 import requests
 
 try:
@@ -45,7 +44,7 @@ def send_batch(retry_deferred=True, test=False):
             
             MessageLog.objects.create(message_data=message.message_data, added=message.added, priority=message.priority, error_code=error_code, log_message=log_message, message_id=message_id)
 
-            if error_code == 0:
+            if error_code == 0 or error_code == 406:
                 message.delete()
             else:
                 message.defer()
@@ -54,9 +53,8 @@ def send_batch(retry_deferred=True, test=False):
         raise Exception('401 - Missing or incorrect API key.')
         
     elif postmark_request.status_code == 422:
-        error = json.loads(r.content)        
+        error = json.loads(postmark_request.content)        
         raise Exception('422 - %s:%s' % (error.get('ErrorCode'), error.get('Message')))
         
     elif postmark_request.status_code == 500:
         raise Exception('500 - Postmark Server Error')
-                

@@ -30,6 +30,7 @@ except ImportError:
 
 DEFAULT_ATTACHMENT_MIME_TYPE = 'application/octet-stream'
 
+
 class EmailMessage:
     """A container and sorta replacement for the django.core.mail.EmailMessage"""
     
@@ -60,7 +61,7 @@ class EmailMessage:
             if mimetype is None:
                 mimetype = DEFAULT_ATTACHMENT_MIME_TYPE
         
-        if not attachments:
+        if not self.attachments:
             attachments = []
         attachments.append({'Name': filename, 'Content': content, 'ContentType': mimetype})
     
@@ -99,14 +100,14 @@ class EmailMessage:
             message_data['Headers'] = postmark_headers
     
         if self.attachments:
-            message_data['Attachments'] = attachments
+            message_data['Attachments'] = self.attachments
         
         from postmark_mailer.models import Message
+        if settings.DEBUG:
+            print json.dumps(message_data, sort_keys=True, indent=4)
         return Message.objects.create(message_data=json.dumps(message_data))
 
-    
 
-# 
 def send_mail(subject, message, from_email, recipient_list, fail_silently=False, auth_user=None, auth_password=None, connection=None):
     """replacement for django.core.mail.send_mail"""
     

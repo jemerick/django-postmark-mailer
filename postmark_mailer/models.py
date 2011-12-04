@@ -1,14 +1,5 @@
 from django.db import models
 
-try:
-    import json                     
-except ImportError:
-    try:
-        import simplejson as json
-    except ImportError:
-        raise Exception('Cannot use python-postmark library without Python 2.6 or greater, or Python 2.4 or 2.5 and the "simplejson" library')
-
-
 class Message(models.Model):
     """An email message"""
     
